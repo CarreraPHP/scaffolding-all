@@ -1,6 +1,31 @@
 
 <md-card>
-  <codemirror [(ngModel)]="code" [config]="cmOptions"></codemirror>
+  <md-tab-group>
+    <md-tab label="Viewer">
+      <pre>
+      {{codeKeys | json}}
+      </pre>
+      <ul>
+        <li *ngFor="let item of codeKeys; let i=index;">
+          
+        </li>
+      </ul>
+    </md-tab>
+    <md-tab label="Edtior">
+      <codemirror [(ngModel)]="code" [config]="cmOptions"></codemirror>
+    </md-tab>
+  </md-tab-group>
+</md-card>
+
+<md-card>
+  
+  
+  <!--<json-editor *ngIf="record && schema" 
+      [config]="jsonViewerOptions"
+      [record]="record" 
+      (onRecordChange)="onRecordChange($event)"
+      [schema]="schema">
+    </json-editor>-->
 </md-card>
 
 <md-card>
