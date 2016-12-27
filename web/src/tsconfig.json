@@ -16,7 +16,8 @@
     ],
     "compilerOptions": {
       "types": [
-        "hammerjs"
+        "hammerjs",
+        "json5"
       ]
     }
   }
