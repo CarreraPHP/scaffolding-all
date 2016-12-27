@@ -5,6 +5,7 @@ import { HttpModule } from '@angular/http';
 import { MaterialModule } from '@angular/material';
 
 import { CodemirrorModule } from 'ng2-codemirror';
+import { JsonEditorModule } from 'ng2-json-editor/ng2-json-editor';
 
 import 'codemirror';
 import 'hammerjs';
@@ -32,6 +33,7 @@ import { SidenavComponent } from './sidenav/sidenav.component';
     FormsModule,
     HttpModule,
     CodemirrorModule,
+    JsonEditorModule,
     MaterialModule.forRoot()
   ],
   providers: [],
