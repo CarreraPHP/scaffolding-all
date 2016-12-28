@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 // import {  } from '@angular/common';
 import 'codemirror/mode/javascript/javascript';
 
@@ -8,7 +8,8 @@ import * as json5 from 'json5';
 @Component({
     selector: 'app-editor',
     templateUrl: './editor.component.html',
-    styleUrls: ['./editor.component.scss']
+    styleUrls: ['./editor.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditorComponent implements OnInit {
 
@@ -104,7 +105,7 @@ export class EditorComponent implements OnInit {
 
     get codeKeys(): Array<any> {
         let obj = this.codeObject;        
-        return this.getKeyListfromObject(obj, 0, "");
+        return this.getKeyListfromObject(obj, 1, "");
     }
 
     getKeyListfromObject(obj: Object, span: number, path:string): Array<any> {
@@ -117,11 +118,13 @@ export class EditorComponent implements OnInit {
 
         for (let i in obj) {
             if (obj[i] instanceof Array) {
-                retArr.push(spanArr.concat([i, "Array", this.getObjectPath(path, i)]));
+                retArr.push(spanArr.concat([i, "[", this.getObjectPath(path, i)]));
                 retArr = retArr.concat(this.getObjectFromList(obj[i], span+1, this.getObjectPath(path, i)));
+                retArr.push(spanArr.concat(["]"]));
             } else if (obj[i] instanceof Object) {
-                retArr.push(spanArr.concat([i, "Object", this.getObjectPath(path, i)]));
+                retArr.push(spanArr.concat([i, "{", this.getObjectPath(path, i)]));
                 retArr = retArr.concat(this.getKeyListfromObject(obj[i], span+1, this.getObjectPath(path, i)));
+                retArr.push(spanArr.concat(["}"]));
             } else {
                 retArr.push(spanArr.concat([i, obj[i], this.getObjectPath(path, i)]));
             }
@@ -157,13 +160,15 @@ export class EditorComponent implements OnInit {
 
         arr.forEach((value, i) => {
             if (value instanceof Array) {
-                retArr.push(spanArr.concat([i, "Array", this.getObjectPath(path, i)]));
+                retArr.push(spanArr.concat([i, "[", this.getObjectPath(path, i)]));
                 retArr = retArr.concat(this.getObjectFromList(value, span+1, this.getObjectPath(path, i)));
+                retArr.push(spanArr.concat(["]"]));
                 // retArr.push([i, [this.getObjectFromList(value)]]);
             } else if (value instanceof Object) {
-                retArr.push(spanArr.concat([i, "Object", this.getObjectPath(path, i)]));
+                retArr.push(spanArr.concat([i, "{", this.getObjectPath(path, i)]));
                 // console.log("key list from object", this.getKeyListfromObject(value));
                 retArr = retArr.concat(this.getKeyListfromObject(value, span+1, this.getObjectPath(path, i)));
+                retArr.push(spanArr.concat(["}"]));
                 // retArr.push([i, this.getKeyListfromObject(value)]);
             } else {
                 retArr.push(spanArr.concat([i, value, this.getObjectPath(path, i)]));
@@ -177,12 +182,109 @@ export class EditorComponent implements OnInit {
         return arr instanceof Array;
     }
 
+    isPrimitive(item:Array<any>) : Boolean {
+        if(item.length > 2) {
+            let value = item[item.length - 2];
+            if(value == "{" || value == "[") {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    isNotPrimitiveAndObjectEnd(item:Array<any>, itemIndex:number, isLast:boolean) : Boolean {
+        if(!isLast) {
+            let i = itemIndex,
+                nextItem:Array<any> = this.codeKeys[i+1];
+
+            console.log("%c item & nextItem length", "color:red;font-size:20px;", item.length, nextItem.length, item, nextItem);
+
+            if(item.length > nextItem.length){
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    isObjectKey(item:Array<any>, subitem:any, subitemIndex:number) {
+        // this.log("is object key", [item, subitem, subitemIndex, item.length-3, item[subitemIndex+1]]);
+        let c1:boolean = subitemIndex == item.length - 3; 
+        if(c1 && item[subitemIndex+1] == "{") {
+            return true;
+        }
+        return false;
+    }
+
+    isObjectBeginBrace(item:Array<any>, subitem:any, subitemIndex:number) {
+        // this.log("is object key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
+        let c1:boolean = subitemIndex == item.length - 2; 
+        if(c1 && item[subitemIndex] == "{") {
+            return true;
+        }
+        return false;
+    }
+
+    isArrayKey(item:Array<any>, subitem:any, subitemIndex:number) {
+        // this.log("is array key", [item, subitem, subitemIndex, item.length-3, item[subitemIndex+1]]);
+        let c1:boolean = subitemIndex == item.length - 3; 
+        if(c1 && item[subitemIndex+1] == "[") {
+            return true;
+        }
+        return false;
+    }
+
+    isArrayBeginBrace(item:Array<any>, subitem:any, subitemIndex:number) {
+        // this.log("is array key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
+        let c1:boolean = subitemIndex == item.length - 2; 
+        if(c1 && item[subitemIndex] == "[") {
+            return true;
+        }
+        return false;
+    }
+
+    isAttributeKey(item:Array<any>, subitem:any, subitemIndex:number) {
+        let c1:boolean = subitemIndex == item.length - 3; 
+        if(c1 && !this.isArrayKey(item, subitem, subitemIndex) && !this.isObjectKey(item, subitem, subitemIndex)) {
+            return true;
+        }
+        return false;
+    }
+
+    getBeginBraces(item:Array<any>) : Array<string> {
+        let retArr = [],
+            type = item[item.length-2];
+        for (var i = 0; i < item.length-3; i++) {
+         retArr.push("");
+        }
+        if(type == "{") {
+            retArr.push("{");
+        } else if(type == "[") {
+            retArr.push("[");
+        }        
+        return retArr;
+    }
+
+    getEndBraces(item:Array<any>) : Array<string> {
+        let retArr = [],
+            type = item[item.length-2];
+        for (var i = 0; i < item.length-3; i++) {
+         retArr.push("");
+        }
+        if(type == "{") {
+            retArr.push("}");
+        } else if(type == "[") {
+            retArr.push("]");
+        }                
+        return retArr;
+    }
+
     getOptions(item: Array<any>) : Array<any> {
         var retArr = [],
             type = item[item.length - 1],
             name = item[item.length - 2];
 
-        if(name == "application" && type == "Object") {
+        if(name == "application" && type == "{") {
 
         }
 
@@ -191,6 +293,10 @@ export class EditorComponent implements OnInit {
 
     onRecordChange(record: Object) {
         this.record = record;
+    }
+
+    log(text:string, values:Array<any>) {
+        console.log.apply(this, ["%c " + text, "color:red;font-size:20px;"].concat(values));
     }
 
     ngOnInit() {
