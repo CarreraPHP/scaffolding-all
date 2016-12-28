@@ -2,21 +2,41 @@
   <md-tab-group>
     <md-tab label="Viewer">
       <ul class="view-table">
-        <li *ngFor="let item of codeKeys;">
-          <ul>
-            <li *ngFor="let subitem of item;">
-              <!--<span *ngIf="subitem.length < 1" style="display:inline-block;background:#fff;border:1px solid #ccc;width:10px;height:20px;margin:0 2px 0 0;"></span>-->
-              <!--<span *ngIf="subitem.length > 0">{{subitem}}</span>
-              <span *ngIf="subitem === true">true</span>
-              <span *ngIf="subitem === false">false</span>-->
-              <span>{{subitem}}</span>
+        <li>              
+          <span>{{ '{' }}</span>
+        </li>
+        <li *ngFor="let item of codeKeys; let itemIndex = index; let isLast = last;">
+          <!--<ul *ngIf="isNotPrimitiveAndObjectEnd(item, itemIndex, isLast)">
+            <li *ngFor="let brace of getEndBraces(item);">              
+              <span> {{brace}}</span>
             </li>
+          </ul>-->
+          <ul>
+            <li *ngFor="let subitem of item; let subitemIndex = index; let isSubLast = last;">
+              
+              <span *ngIf="!isSubLast || subitem == '}' || subitem == ']'" 
+                [class.object-key]="isObjectKey(item, subitem, subitemIndex)"
+                [class.object-begin-brace]="isObjectBeginBrace(item, subitem, subitemIndex)"
+                [class.array-key]="isArrayKey(item, subitem, subitemIndex)"
+                [class.array-begin-brace]="isArrayBeginBrace(item, subitem, subitemIndex)"
+                [class.attribute-key]="isAttributeKey(item, subitem, subitemIndex)">
+              {{subitem}}</span>
+            </li>
+            <!--length : {{item.length}}-->
             <li *ngFor="let option of getOptions(item)">
               <button md-raised-button color="primary">
                 RAISED
               </button>
             </li>
           </ul>
+          <!--<ul *ngIf="!isPrimitive(item)">
+            <li *ngFor="let brace of getBeginBraces(item);">              
+              <span> {{brace}}</span>
+            </li>
+          </ul>-->          
+        </li>
+        <li>              
+          <span>{{ '}' }}</span>
         </li>
       </ul>
       <pre>
