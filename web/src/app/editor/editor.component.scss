@@ -1,0 +1,22 @@
+ul, li {
+    list-style: none;
+}
+
+.view-table {
+    display: table;
+
+    & > li {
+        display: table-row-group;
+
+        > ul {
+            display: table-row;
+
+            > li {
+                display: table-cell;
+                vertical-align: middle;
+                border:1px solid #fff; 
+            }
+        } 
+         
+    }
+}

@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MaterialModule } from '@angular/material';
+import { CommonModule } from '@angular/common';
 
 import { CodemirrorModule } from 'ng2-codemirror';
 import { JsonEditorModule } from 'ng2-json-editor/ng2-json-editor';
@@ -32,6 +33,7 @@ import { SidenavComponent } from './sidenav/sidenav.component';
     BrowserModule,
     FormsModule,
     HttpModule,
+    CommonModule,
     CodemirrorModule,
     JsonEditorModule,
     MaterialModule.forRoot()

@@ -1,15 +1,39 @@
-
 <md-card>
   <md-tab-group>
     <md-tab label="Viewer">
-      <pre>
-      {{codeKeys | json}}
-      </pre>
-      <ul>
-        <li *ngFor="let item of codeKeys; let i=index;">
-          
+      <ul class="view-table">
+        <li *ngFor="let item of codeKeys;">
+          <ul>
+            <li *ngFor="let subitem of item;">
+              <!--<span *ngIf="subitem.length < 1" style="display:inline-block;background:#fff;border:1px solid #ccc;width:10px;height:20px;margin:0 2px 0 0;"></span>-->
+              <!--<span *ngIf="subitem.length > 0">{{subitem}}</span>
+              <span *ngIf="subitem === true">true</span>
+              <span *ngIf="subitem === false">false</span>-->
+              <span>{{subitem}}</span>
+            </li>
+            <li *ngFor="let option of getOptions(item)">
+              <button md-raised-button color="primary">
+                RAISED
+              </button>
+            </li>
+          </ul>
         </li>
       </ul>
+      <pre>
+        {{codeKeys | json}}
+      </pre>
+      <!--<span [ngSwitch]="isArray(item)">
+            <template ngSwitchCase="true">
+              <ul>
+                <li *ngFor="let subitem of item;">
+                  <span *ngIf="subitem.length > 0">{{subitem}}</span>
+      </li>
+      </ul>
+      </template>
+      <template ngSwitchCase="false">
+        <span>{{item}}</span>
+      </template>
+      </span>-->
     </md-tab>
     <md-tab label="Edtior">
       <codemirror [(ngModel)]="code" [config]="cmOptions"></codemirror>
@@ -18,8 +42,8 @@
 </md-card>
 
 <md-card>
-  
-  
+
+
   <!--<json-editor *ngIf="record && schema" 
       [config]="jsonViewerOptions"
       [record]="record" 
