@@ -13,21 +13,32 @@
           </ul>-->
           <ul>
             <li *ngFor="let subitem of item; let subitemIndex = index; let isSubLast = last;">
-              
-              <span *ngIf="!isSubLast || subitem == '}' || subitem == ']'" 
+               <!--&& !isAttributeValue(item, subitem, subitemIndex)-->
+              <span *ngIf="(!isSubLast || subitem == '}' || subitem == ']')" 
                 [class.object-key]="isObjectKey(item, subitem, subitemIndex)"
                 [class.object-begin-brace]="isObjectBeginBrace(item, subitem, subitemIndex)"
                 [class.array-key]="isArrayKey(item, subitem, subitemIndex)"
                 [class.array-begin-brace]="isArrayBeginBrace(item, subitem, subitemIndex)"
-                [class.attribute-key]="isAttributeKey(item, subitem, subitemIndex)">
+                [class.attribute-key]="isAttributeKey(item, subitem, subitemIndex)"
+                [class.empty-span]="subitem.length < 1">
               {{subitem}}</span>
+              <!--<md-input
+                value="{{subitem}}" (change)="handleAttributeValue(value)"
+                *ngIf="isAttributeValue(item, subitem, subitemIndex)"
+                placeholder="{{item[subitemIndex-1]}}">
+              </md-input>-->
+              <span *ngIf="isAttributeMetaValue(item, subitem, subitemIndex)">
+                <button md-button><md-icon>mode edit</md-icon></button>
+                <span 
+                  *ngFor="let option of getOptions(item)">
+                  <button md-raised-button color="primary">
+                    RAISED
+                  </button>
+                </span>
+              </span>
             </li>
             <!--length : {{item.length}}-->
-            <li *ngFor="let option of getOptions(item)">
-              <button md-raised-button color="primary">
-                RAISED
-              </button>
-            </li>
+            
           </ul>
           <!--<ul *ngIf="!isPrimitive(item)">
             <li *ngFor="let brace of getBeginBraces(item);">              
@@ -39,9 +50,9 @@
           <span>{{ '}' }}</span>
         </li>
       </ul>
-      <pre>
+      <!--<pre>
         {{codeKeys | json}}
-      </pre>
+      </pre>-->
       <!--<span [ngSwitch]="isArray(item)">
             <template ngSwitchCase="true">
               <ul>

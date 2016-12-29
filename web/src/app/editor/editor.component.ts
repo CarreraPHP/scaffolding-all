@@ -244,9 +244,27 @@ export class EditorComponent implements OnInit {
     }
 
     isAttributeKey(item:Array<any>, subitem:any, subitemIndex:number) {
-        let c1:boolean = subitemIndex == item.length - 3; 
-        if(c1 && !this.isArrayKey(item, subitem, subitemIndex) && !this.isObjectKey(item, subitem, subitemIndex)) {
+        // this.log("is attribute key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
+        let c1:boolean = subitemIndex == item.length - 3,
+            isKey = (subitem.length > 0);
+        if(c1 && isKey && !this.isArrayKey(item, subitem, subitemIndex) && !this.isObjectKey(item, subitem, subitemIndex)) {
             return true;
+        }
+        return false;
+    }
+
+    isAttributeValue(item:Array<any>, subitem:any, subitemIndex:number) {
+        if(subitemIndex > 1) {
+            // this.log("is attribute value", [item, subitem, subitemIndex, item[subitemIndex-1], subitemIndex-1]);
+            return this.isAttributeKey(item, item[subitemIndex-1], subitemIndex-1);
+        }
+        return false;
+    }
+
+    isAttributeMetaValue(item:Array<any>, subitem:any, subitemIndex:number) {
+        if(subitemIndex > 2) {
+            // this.log("is attribute value", [item, subitem, subitemIndex, item[subitemIndex-1], subitemIndex-1]);
+            return this.isAttributeKey(item, item[subitemIndex-2], subitemIndex-2);
         }
         return false;
     }
@@ -289,6 +307,14 @@ export class EditorComponent implements OnInit {
         }
 
         return retArr;
+    }
+
+    handleAttributeValue() {
+        let arr:Array<any> = [];
+        for (var key in arguments) {
+            arr.push(arguments[key]);
+        }
+        this.log("attribute value", arr);
     }
 
     onRecordChange(record: Object) {

@@ -2,6 +2,12 @@ ul, li {
     list-style: none;
     padding:0;
     margin:0;
+    font-family: monospace;
+    font-size:16px;
+}
+
+button {
+    display: inline-block;
 }
 
 .view-table {
@@ -19,9 +25,9 @@ ul, li {
 
             > li {
                 display: inline-block;
-                padding:5px;                
+                padding:2px 2px 0 0;
                 // border:1px solid #fff;
-                line-height: 20px;
+                line-height: 16px;
                 min-width: 10px;
             }
         } 
@@ -36,7 +42,7 @@ ul, li {
 .object-key::after, .array-key::after, .attribute-key::after {
     content: ":";
     display: inline-block;
-    padding: 5px 2px;
+    padding:2px 0 0 2px;
 }
 
 .array-key {
@@ -50,4 +56,8 @@ ul, li {
 .object-begin-brace, .object-end-brace, .array-begin-brace, .array-end-brace {
     color: white;
     font-weight: bold;
+}
+
+.empty-span {
+    border-left: 1px dotted #ccc;
 }
