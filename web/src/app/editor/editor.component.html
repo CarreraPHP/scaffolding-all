@@ -28,7 +28,9 @@
                 placeholder="{{item[subitemIndex-1]}}">
               </md-input>-->
               <span *ngIf="isAttributeMetaValue(item, subitem, subitemIndex)">
-                <button md-button><md-icon>mode edit</md-icon></button>
+                <button md-button (click)="openDialog(subitem, item[subitemIndex-2], item[subitemIndex-1])">
+                  <i class="material-icons">mode_edit</i>
+                </button>
                 <span 
                   *ngFor="let option of getOptions(item)">
                   <button md-raised-button color="primary">
