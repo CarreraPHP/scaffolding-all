@@ -1,4 +1,4 @@
-import { Component, Optional, OnInit } from '@angular/core';
+import { Component, Optional, OnInit, Input } from '@angular/core';
 import {MdDialog, MdDialogRef} from '@angular/material';
 
 @Component({
@@ -8,7 +8,20 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 })
 export class DialogContentComponent implements OnInit {
 
+  @Input()
+  public currentValue:any;
+
+  @Input()
+  public attributeKey:string;
+
   constructor(@Optional() public dialogRef: MdDialogRef<DialogContentComponent>) { }
+
+  doClose(value: any) {
+    // debugger;
+    if(typeof value === "string" && value.length > 0){
+      this.dialogRef.close(value);
+    }
+  }
 
   ngOnInit() {
   }
