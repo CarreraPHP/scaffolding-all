@@ -1,10 +1,9 @@
-<md-toolbar color="primary">
-  <button class="app-icon-button" (click)="sidenav.toggle()">
-    <i class="material-icons app-toolbar-menu">menu</i>
-  </button> 
-  Scaffolding-all: Scaffold Documnetation
-  <span class="app-toolbar-filler"></span>
-  <!--<button md-button (click)="isDarkTheme = !isDarkTheme">
-    TOGGLE DARK THEME
-  </button>-->
-</md-toolbar>
+<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top scaf-header">
+  <div class="navbar-brand">
+    <button class="btn btn-link" (click)="sidenav.toggle()">
+      <i class="fa fa-bars"></i>
+    </button>
+    <a class="title" href="#">Scaffolding-all: Scaffold Documentation</a>
+    <button class="btn btn-success pull-right">Download Scaffolding.json</button>
+  </div>
+</nav>

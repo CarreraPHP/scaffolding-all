@@ -5,6 +5,8 @@ import { HttpModule } from '@angular/http';
 import { MaterialModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 import { CodemirrorModule } from 'ng2-codemirror';
 import { JsonEditorModule } from 'ng2-json-editor/ng2-json-editor';
 
@@ -36,7 +38,8 @@ import { SidenavComponent } from './sidenav/sidenav.component';
     CommonModule,
     CodemirrorModule,
     JsonEditorModule,
-    MaterialModule.forRoot()
+    MaterialModule.forRoot(),
+    NgbModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent],

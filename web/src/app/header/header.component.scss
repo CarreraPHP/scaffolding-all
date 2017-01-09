@@ -1,0 +1,33 @@
+.scaf-header {
+    // background: #212121;
+    // color: white;
+
+    border-radius: 0;
+
+    background: #c2185b;
+    color: rgba(255, 255, 255, 0.87);
+
+    .title {
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.87);
+        line-height: 1.25;
+        vertical-align: middle;
+        display: inline-block;
+        padding:8px;
+    }
+
+    .md-accent {
+        background: #b0bec5;
+        color: rgba(0, 0, 0, 0.87); 
+    }
+
+    .md-warn {
+        background: #ff5722;
+        color: white; 
+    }
+
+    .btn {
+        border-radius: 0;
+    }
+
+}

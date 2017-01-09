@@ -1,196 +1,118 @@
-<md-card>
-  <md-tab-group>
-    <md-tab label="Viewer">
-      <ul class="view-table">
-        <li>              
-          <span>{{ '{' }}</span>
-        </li>
-        <li *ngFor="let item of codeKeys; let itemIndex = index; let isLast = last;">
-          <!--<ul *ngIf="isNotPrimitiveAndObjectEnd(item, itemIndex, isLast)">
-            <li *ngFor="let brace of getEndBraces(item);">              
-              <span> {{brace}}</span>
-            </li>
-          </ul>-->
-          <ul>
-            <li *ngFor="let subitem of item; let subitemIndex = index; let isSubLast = last;">
-               <!--&& !isAttributeValue(item, subitem, subitemIndex)-->
-              <span *ngIf="(!isSubLast || subitem == '}' || subitem == ']')" 
-                [class.object-key]="isObjectKey(item, subitem, subitemIndex)"
-                [class.object-begin-brace]="isObjectBeginBrace(item, subitem, subitemIndex)"
-                [class.array-key]="isArrayKey(item, subitem, subitemIndex)"
-                [class.array-begin-brace]="isArrayBeginBrace(item, subitem, subitemIndex)"
-                [class.attribute-key]="isAttributeKey(item, subitem, subitemIndex)"
-                [class.empty-span]="subitem.length < 1">
-              {{subitem}}</span>
-              <!--<md-input
-                value="{{subitem}}" (change)="handleAttributeValue(value)"
-                *ngIf="isAttributeValue(item, subitem, subitemIndex)"
-                placeholder="{{item[subitemIndex-1]}}">
-              </md-input>-->
-              <span *ngIf="isAttributeMetaValue(item, subitem, subitemIndex)">
-                <button md-button (click)="openDialog(subitem, item[subitemIndex-2], item[subitemIndex-1])">
-                  <i class="material-icons">mode_edit</i>
-                </button>
-                <span 
-                  *ngFor="let option of getOptions(item)">
-                  <button md-raised-button color="primary">
-                    RAISED
+<div class="card">
+  <!--<div class="card-header text-right">
+    <button class="btn btn-success">Download Scaffolding.json</button>
+  </div>-->
+  <ngb-tabset>
+    <ngb-tab>
+      <template ngbTabTitle>
+        <i class="fa fa-codepen"></i>  <b>Visual</b> Editor
+      </template>
+      <template ngbTabContent>
+        <ul class="view-table">
+          <li>
+            <span class="object-begin-brace">{{ '{' }}</span>
+          </li>
+          <li *ngFor="let item of codeKeys; let itemIndex = index; let isLast = last;">
+            
+            <ul>
+              <li *ngFor="let subitem of item; let subitemIndex = index; let isSubLast = last;">
+                <!--&& !isAttributeValue(item, subitem, subitemIndex)-->
+                <span *ngIf="(!isSubLast || subitem == '}' || subitem == ']') && !isAttributeValue(item, subitem, subitemIndex)" [class.object-key]="isObjectKey(item, subitem, subitemIndex)"
+                  [class.object-begin-brace]="isObjectBeginBrace(item, subitem, subitemIndex)" 
+                  [class.object-end-brace]="isObjectEndBrace(item, subitem, subitemIndex)" 
+                  [class.array-key]="isArrayKey(item, subitem, subitemIndex)"
+                  [class.array-begin-brace]="isArrayBeginBrace(item, subitem, subitemIndex)" 
+                  [class.array-end-brace]="isArrayEndBrace(item, subitem, subitemIndex)" 
+                  [class.attribute-key]="isAttributeKey(item, subitem, subitemIndex)"
+                  [class.empty-span]="subitem.length < 1">
+                  {{subitem}}
+                </span>
+
+                <div class="input-group inline" *ngIf="isAttributeValue(item, subitem, subitemIndex)">
+                  <input type="text" class="form-control" aria-describedby="basic-addon2" 
+                    value="{{subitem}}" 
+                    (change)="handleAttributeValue($event, item[subitemIndex+1])"
+                    class="inline-input">
+                  <span class="input-group-addon" id="basic-addon2">
+                    <i class="fa fa-save"></i>
+                  </span>
+                </div>
+                
+                <span *ngIf="isObjectBeginBrace(item, subitem, subitemIndex)">
+                  <button class="btn btn-danger"
+                     *ngIf="isWithinArray(item, subitem, subitemIndex)" 
+                     (click)="prungeInstance(item, subitem, subitemIndex)">
+                    <i class="fa fa-minus"></i>
                   </button>
                 </span>
-              </span>
-            </li>
-            <!--length : {{item.length}}-->
-            
-          </ul>
-          <!--<ul *ngIf="!isPrimitive(item)">
-            <li *ngFor="let brace of getBeginBraces(item);">              
-              <span> {{brace}}</span>
-            </li>
-          </ul>-->          
-        </li>
-        <li>              
-          <span>{{ '}' }}</span>
-        </li>
-      </ul>
-      <!--<pre>
-        {{codeKeys | json}}
-      </pre>-->
-      <!--<span [ngSwitch]="isArray(item)">
-            <template ngSwitchCase="true">
-              <ul>
-                <li *ngFor="let subitem of item;">
-                  <span *ngIf="subitem.length > 0">{{subitem}}</span>
-      </li>
-      </ul>
+
+                <span *ngIf="isArrayBeginBrace(item, subitem, subitemIndex)">
+                  <button class="btn btn-primary"
+                    *ngIf="isPropertiesArray(item, subitem, subitemIndex)" 
+                    (click)="addProperty(item, subitem, subitemIndex)">
+                    <i class="fa fa-plus"></i>
+                    <!--Property-->
+                  </button>
+                  <button class="btn btn-primary"
+                    *ngIf="isInputArray(item, subitem, subitemIndex)" 
+                    (click)="addInput(item, subitem, subitemIndex)">
+                    <i class="fa fa-plus"></i>
+                    <!--Input Binding-->
+                  </button>
+                  <button class="btn btn-primary"
+                    *ngIf="isOutputArray(item, subitem, subitemIndex)" 
+                    (click)="addOutput(item, subitem, subitemIndex)">
+                    <i class="fa fa-plus"></i>
+                    <!--Output Binding-->
+                  </button>
+                  <button class="btn btn-primary"
+                    *ngIf="isMethodArray(item, subitem, subitemIndex)" 
+                    (click)="addMethod(item, subitem, subitemIndex)">
+                    <i class="fa fa-plus"></i>
+                    <!--Method-->
+                  </button>
+                  <button class="btn btn-primary"
+                    *ngIf="isMethodParamArray(item, subitem, subitemIndex)" 
+                    (click)="addMethodParam(item, subitem, subitemIndex)">
+                    <i class="fa fa-plus"></i>
+                    <!--Method-->
+                  </button>
+                  <button class="btn btn-primary"
+                    *ngIf="isComponentArray(item, subitem, subitemIndex)" 
+                    (click)="addComponent(item, subitem, subitemIndex)">
+                    <i class="fa fa-plus"></i>
+                    <!--Component-->
+                  </button>
+                </span>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <span class="object-end-brace">{{ '}' }}</span>
+          </li>
+        </ul>
       </template>
-      <template ngSwitchCase="false">
-        <span>{{item}}</span>
+    </ngb-tab>
+    <ngb-tab>
+      <template ngbTabTitle>
+        <i class="fa fa-code"></i>  <b>Code</b> Editor
       </template>
-      </span>-->
-    </md-tab>
-    <md-tab label="Edtior">
-      <codemirror [(ngModel)]="code" [config]="cmOptions"></codemirror>
-    </md-tab>
-  </md-tab-group>
-</md-card>
-
-<md-card>
-
-
-  <!--<json-editor *ngIf="record && schema" 
-      [config]="jsonViewerOptions"
-      [record]="record" 
-      (onRecordChange)="onRecordChange($event)"
-      [schema]="schema">
-    </json-editor>-->
-</md-card>
-
-<md-card>
-  <button md-button>FLAT</button>
-  <button md-raised-button md-tooltip="This is a tooltip!">RAISED</button>
-  <button md-raised-button color="primary">PRIMARY RAISED</button>
-  <button md-raised-button color="accent">ACCENT RAISED</button>
-</md-card>
-
-<md-card>
-  <md-checkbox>Unchecked</md-checkbox>
-  <md-checkbox [checked]="true">Checked</md-checkbox>
-  <md-checkbox [indeterminate]="true">Indeterminate</md-checkbox>
-  <md-checkbox [disabled]="true">Disabled</md-checkbox>
-</md-card>
-
-<md-card>
-  <md-radio-button name="symbol">Alpha</md-radio-button>
-  <md-radio-button name="symbol">Beta</md-radio-button>
-  <md-radio-button name="symbol" disabled>Gamma</md-radio-button>
-</md-card>
-
-<md-card class="app-input-section">
-  <md-input placeholder="First name"></md-input>
-
-  <md-input #nickname placeholder="Nickname" maxlength="50">
-    <md-hint align="end">
-      {{nickname.characterCount}} / 50
-    </md-hint>
-  </md-input>
-
-  <md-input>
-    <md-placeholder>
-      <i class="material-icons app-input-icon">android</i> Favorite phone
-    </md-placeholder>
-  </md-input>
-
-  <md-input placeholder="Motorcycle model">
-    <span md-prefix>
-          <i class="material-icons app-input-icon">motorcycle</i>
-          &nbsp;
-        </span>
-  </md-input>
-</md-card>
-
-<md-card>
-  <md-list class="app-list">
-    <md-list-item *ngFor="let food of foods">
-      <h3 md-line>{{food.name}}</h3>
-      <p md-line class="demo-secondary-text">{{food.rating}}</p>
-    </md-list-item>
-  </md-list>
-</md-card>
-
-<md-card>
-  <md-spinner class="app-spinner"></md-spinner>
-  <md-spinner color="accent" class="app-spinner"></md-spinner>
-</md-card>
-
-<md-card>
-  <label>
-        Indeterminate progress-bar
-        <md-progress-bar
-            class="app-progress"
-            mode="indeterminate"
-            aria-label="Indeterminate progress-bar example"></md-progress-bar>
-      </label>
-
-  <label>
-        Determinate progress bar - {{progress}}%
-        <md-progress-bar
-            class="app-progress"
-            color="accent"
-            mode="determinate"
-            [value]="progress"
-            aria-label="Determinate progress-bar example"></md-progress-bar>
-      </label>
-</md-card>
-
-<md-card>
-  <md-tab-group>
-    <md-tab label="Earth">
-      <p>EARTH</p>
-    </md-tab>
-    <md-tab label="Fire">
-      <p>FIRE</p>
-    </md-tab>
-  </md-tab-group>
-</md-card>
-
-<md-card>
-  <md-icon>build</md-icon>
-</md-card>
-
-<md-card>
-  <button md-button [md-menu-trigger-for]="menu">
-    MENU
-  </button>
-</md-card>
-
-<md-menu #menu="mdMenu">
-  <button md-menu-item>Lemon</button>
-  <button md-menu-item>Lime</button>
-  <button md-menu-item>Banana</button>
-</md-menu>
-
-<md-card>
-  <p>Last dialog result: {{lastDialogResult}}</p>
-  <button md-raised-button (click)="openDialog()">DIALOG</button>
-  <button md-raised-button (click)="showSnackbar()">SNACKBAR</button>
-</md-card>
+      <template ngbTabContent>
+        <codemirror [(ngModel)]="code" [config]="cmOptions"></codemirror>
+      </template>
+    </ngb-tab>
+    <ngb-tab [disabled]="false">
+      <template ngbTabTitle>
+        <i class="fa fa-tachometer"></i>  Object Key Debugger
+      </template>
+      <template ngbTabContent>
+        <pre style="color: #fff;">
+          {{codeKeys | json}}
+        </pre>
+      </template>
+    </ngb-tab>
+  </ngb-tabset>
+  <!--<div class="card-footer text-right">
+    <button class="btn btn-success">Download Scaffolding.json</button>
+  </div>-->
+</div>

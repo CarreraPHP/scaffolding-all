@@ -1,7 +1,8 @@
-import { 
-    Component, OnInit, ChangeDetectionStrategy, 
-    Injector, DoCheck } from '@angular/core';
-import {MdDialog, MdDialogRef, MdSnackBar} from '@angular/material';
+import {
+    Component, OnInit, ChangeDetectionStrategy,
+    Injector, DoCheck, ViewEncapsulation
+} from '@angular/core';
+import { MdDialog, MdDialogRef, MdSnackBar } from '@angular/material';
 
 import { DialogContentComponent } from '../shared/dialog-content/dialog-content.component';
 
@@ -15,7 +16,8 @@ import * as json5 from 'json5';
     selector: 'app-editor',
     templateUrl: './editor.component.html',
     styleUrls: ['./editor.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None
 })
 export class EditorComponent implements OnInit, DoCheck {
 
@@ -84,8 +86,9 @@ export class EditorComponent implements OnInit, DoCheck {
     public cmOptions: Object = {};
     public jsonViewerOptions: Object = {};
 
-    private codeJSON:Object = {};
-    private codeJSONKeyList:Array<any> = [];
+    private codeJSON: Object = {};
+    private codeJSONKeyList: Array<any> = [];
+    private codeJSONUpdateTimeout: number = 0;
 
     constructor(private _dialog: MdDialog) {
         this.cmOptions = {
@@ -105,7 +108,7 @@ export class EditorComponent implements OnInit, DoCheck {
     }
 
     get codeObject(): Object {
-        if(this.codeJSON.hasOwnProperty('application')) {
+        if (this.codeJSON.hasOwnProperty('application')) {
             return this.codeJSON;
         }
         return this.codeJSON = json5.parse(this.code);
@@ -118,13 +121,13 @@ export class EditorComponent implements OnInit, DoCheck {
     }
 
     get codeKeys(): Array<any> {
-        if(this.codeJSONKeyList.length > 0) {
+        if (this.codeJSONKeyList.length > 0) {
             return this.codeJSONKeyList;
         }
         return this.codeJSONKeyList = this.getKeyListfromObject(this.codeObject, 1, "");
     }
 
-    set codeKeys(arr:Array<any>) {
+    set codeKeys(arr: Array<any>) {
         this.codeJSONKeyList = arr;
     }
 
@@ -245,6 +248,15 @@ export class EditorComponent implements OnInit, DoCheck {
         return false;
     }
 
+    isObjectEndBrace(item: Array<any>, subitem: any, subitemIndex: number) {
+        // this.log("is object key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
+        let c1: boolean = subitemIndex == item.length - 1;
+        if (c1 && subitem == "}") {
+            return true;
+        }
+        return false;
+    }
+
     isArrayKey(item: Array<any>, subitem: any, subitemIndex: number) {
         // this.log("is array key", [item, subitem, subitemIndex, item.length-3, item[subitemIndex+1]]);
         let c1: boolean = subitemIndex == item.length - 3;
@@ -258,6 +270,15 @@ export class EditorComponent implements OnInit, DoCheck {
         // this.log("is array key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
         let c1: boolean = subitemIndex == item.length - 2;
         if (c1 && item[subitemIndex] == "[") {
+            return true;
+        }
+        return false;
+    }
+
+    isArrayEndBrace(item: Array<any>, subitem: any, subitemIndex: number) {
+        // this.log("is object key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
+        let c1: boolean = subitemIndex == item.length - 1;
+        if (c1 && subitem == "]") {
             return true;
         }
         return false;
@@ -329,16 +350,26 @@ export class EditorComponent implements OnInit, DoCheck {
         return retArr;
     }
 
-    handleAttributeValue() {
-        let arr: Array<any> = [];
-        for (var key in arguments) {
-            arr.push(arguments[key]);
-        }
-        this.log("attribute value", arr);
+    updateCodeJSON(keyPath: string, result: any) {
+        Function("obj", "value", `obj.` + keyPath + ` = value`)(this.codeJSON, result);
+        this.codeObject = this.codeJSON;
+        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, "");
+        this.log("result from dialog", [result, keyPath, this.codeJSON]);
+    }
+
+    handleAttributeValue(event: Event, keyPath: string) {
+        // if(this.codeJSONUpdateTimeout > 0) {
+        //     window.clearTimeout(this.codeJSONUpdateTimeout);
+        //     this.codeJSONUpdateTimeout = 0;
+        // }
+        // this.codeJSONUpdateTimeout = window.setTimeout(() => {
+        let value = (event.target as HTMLInputElement).value;
+        this.updateCodeJSON(keyPath, value);
+        // }, 500);
     }
 
 
-    openDialog(keyPath: string, key:string, value: string) {
+    openDialog(keyPath: string, key: string, value: string) {
         this.log("triggered", []);
 
         // var dc:DialogContentComponent = new DialogContentComponent();
@@ -350,11 +381,137 @@ export class EditorComponent implements OnInit, DoCheck {
         dialogRef.componentInstance.attributeKey = key;
 
         dialogRef.afterClosed().subscribe(result => {
-            Function("obj", "value", `obj.` + keyPath +` = value`)(this.codeJSON, result);
-            this.codeObject = this.codeJSON;
-            this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, "");
+            this.updateCodeJSON(keyPath, result);
             this.log("result from dialog", [this.codeJSON]);
         });
+    }
+
+    /**
+     * Application Object has default value for all its attributes
+     * No methods needed right now.
+     */
+    isApplicationObject(item: Array<any>, subitem: any, subitemIndex: number): boolean {
+        return false;
+    }
+
+    isPropertiesArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
+        return (subitem === "[" && item[subitemIndex - 1] === "properties") ? true : false;
+    }
+
+    isInputArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
+        return (subitem === "[" && item[subitemIndex - 1] === "input") ? true : false;
+    }
+
+    isOutputArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
+        return (subitem === "[" && item[subitemIndex - 1] === "output") ? true : false;
+    }
+
+    isMethodArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
+        return (subitem === "[" && item[subitemIndex - 1] === "methods") ? true : false;
+    }
+
+    isMethodParamArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
+        return (subitem === "[" && item[subitemIndex - 1] === "params") ? true : false;
+    }
+
+    isComponentArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
+        return (subitem === "[" && item[subitemIndex - 1] === "components") ? true : false;
+    }
+
+    addProperty(item: Array<any>, subitem: any, subitemIndex: number): void {
+        const keyPath = item[subitemIndex + 1];
+        const result = {
+            name: "newProperty",
+            type: "boolean",
+            defaultValue: true
+        };
+        this.pushToCodeJSONArray(keyPath, result);
+    }
+
+    addInput(item: Array<any>, subitem: any, subitemIndex: number): void {
+        const keyPath = item[subitemIndex + 1];
+        const result = {
+            name: "newInput",
+            // bindingType: "property",
+            parentBinding: "parentProperty"
+        };
+        this.pushToCodeJSONArray(keyPath, result);
+    }
+
+    addOutput(item: Array<any>, subitem: any, subitemIndex: number): void {
+        const keyPath = item[subitemIndex + 1];
+        const result = {
+            name: "newOutput",
+            // bindingType: "property",
+            parentBinding: "parentMethod"
+        };
+        this.pushToCodeJSONArray(keyPath, result);
+    }
+
+    addMethod(item: Array<any>, subitem: any, subitemIndex: number): void {
+        const keyPath = item[subitemIndex + 1];
+        const result = {
+            name: "newMethod",
+            params: [],
+            return: {
+                type: "void"
+            },
+            getter: false,
+            setter: false
+        };
+        this.pushToCodeJSONArray(keyPath, result);
+    }
+
+    addMethodParam(item: Array<any>, subitem: any, subitemIndex: number): void {
+        const keyPath = item[subitemIndex + 1];
+        const result = {
+            name: "newParam",
+            type: "string"
+        };
+        this.pushToCodeJSONArray(keyPath, result);
+    }
+
+    addComponent(item: Array<any>, subitem: any, subitemIndex: number): void {
+        // Below code is not required as this condition check is done in the ngIf expression
+        // if (subitem === "[" && item[subitemIndex-1] === "components") {}
+        // this.log("Arguments for Add Component", [item, subitem, subitemIndex]);
+        const keyPath = item[subitemIndex + 1];
+        const result = {
+            name: "newComponent",
+            bindings: {
+                input: [],
+                output: []
+            },
+            properties: [],
+            methods: [],
+            components: []
+        };
+        this.pushToCodeJSONArray(keyPath, result);
+    }
+
+    isWithinArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
+        // will test is the value is an number or not.
+        // This will confirm whether the value is within an Array or not.
+        const r:RegExp = /^\d+$/; 
+        return (subitem === "{" && r.test(item[subitemIndex - 1])) ? true : false;
+    }
+
+    prungeInstance(item: Array<any>, subitem: any, subitemIndex: number): void {
+        const keyPath = item[subitemIndex + 1];
+        const result = parseInt(item[subitemIndex - 1]);
+        this.spliceFromCodeJSONArray(keyPath, result);
+    }
+
+    pushToCodeJSONArray(keyPath: string, result: any) {
+        Function("obj", "value", `obj.` + keyPath + `.push(value)`)(this.codeJSON, result);
+        this.codeObject = this.codeJSON;
+        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, "");
+    }
+
+    spliceFromCodeJSONArray(keyPath: string, result: number) {
+        Function("obj", "value", `obj.` + keyPath.replace("[" + result +"]", "") + `.splice(value, 1)`)(this.codeJSON, result);
+        this.codeObject = this.codeJSON;
+        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, "");
     }
 
     onRecordChange(record: Object) {
