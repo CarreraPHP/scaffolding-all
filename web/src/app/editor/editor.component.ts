@@ -1,6 +1,8 @@
 import {
+    ViewChild, Renderer,
     Component, OnInit, ChangeDetectionStrategy,
-    Injector, DoCheck, ViewEncapsulation
+    Injector, DoCheck, ViewEncapsulation,
+    AfterViewInit
 } from '@angular/core';
 import { MdDialog, MdDialogRef, MdSnackBar } from '@angular/material';
 
@@ -19,7 +21,12 @@ import * as json5 from 'json5';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class EditorComponent implements OnInit, DoCheck {
+export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
+
+    @ViewChild('a#jsonDownload')
+    set downloadAnchor(v:HTMLAnchorElement) {
+        console.log("%c step 4: downloadAnchor", "color:red;font-size:medium;", arguments);
+    }
 
     public code: string = `{
         /*
@@ -90,7 +97,7 @@ export class EditorComponent implements OnInit, DoCheck {
     private codeJSONKeyList: Array<any> = [];
     private codeJSONUpdateTimeout: number = 0;
 
-    constructor(private _dialog: MdDialog) {
+    constructor(private _dialog: MdDialog, private renderer:Renderer) {
         this.cmOptions = {
             lineNumbers: true,
             // mode: {
@@ -514,6 +521,15 @@ export class EditorComponent implements OnInit, DoCheck {
         this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, "");
     }
 
+    downloadLatestJSON() : void {
+        console.log("%c step 3: Before Anchor click event triggered", "color:red;font-size:medium;");
+        const anchor:HTMLAnchorElement = this.renderer.selectRootElement("a#jsonDownload");
+        const blob:Blob = new Blob([JSON.stringify(this.codeJSON)], { type: "application/json"});
+        const url:string = URL.createObjectURL(blob);
+        anchor.href = url;
+        anchor.click();
+    }
+
     onRecordChange(record: Object) {
         this.record = record;
     }
@@ -529,6 +545,10 @@ export class EditorComponent implements OnInit, DoCheck {
 
     ngDoCheck() {
 
+    }
+
+    ngAfterViewInit() {
+        console.log("%c step 5: AfterViewInit", "color:red;font-size:medium;", arguments);
     }
 
 }

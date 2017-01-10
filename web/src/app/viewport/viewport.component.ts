@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {MdDialog, MdDialogRef, MdSnackBar} from '@angular/material';
 
 import { DialogContentComponent } from '../shared/dialog-content/dialog-content.component';
+import { EditorComponent } from '../editor/editor.component';
 
 @Component({
   selector: 'app-viewport',
@@ -26,6 +27,11 @@ export class ViewportComponent implements OnInit {
     setInterval(() => {
       this.progress = (this.progress + Math.floor(Math.random() * 4) + 1) % 100;
     }, 200);
+  }
+
+  downloadFile(editEl:EditorComponent) {
+    console.log("%c step 2: Viewport method triggered", "color:red;font-size:medium;", arguments);
+    editEl.downloadLatestJSON();
   }
 
   openDialog() {

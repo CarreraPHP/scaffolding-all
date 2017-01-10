@@ -1,11 +1,10 @@
 <md-sidenav-layout [class.m2app-dark]="isDarkTheme">
-  <app-header></app-header>
+  <app-header (generateFile)="downloadFile(editor)"></app-header>
   <app-sidenav></app-sidenav>
   <div class="app-content">
-    <app-editor></app-editor>
+    <app-editor #editor></app-editor>
   </div>
 </md-sidenav-layout>
-
 
 <span class="app-action" [class.m2app-dark]="isDarkTheme">
   <button md-fab><md-icon>check circle</md-icon></button>
