@@ -21,8 +21,7 @@
         "../node_modules/font-awesome/scss/font-awesome.scss",
         "../node_modules/codemirror/lib/codemirror.css",
         "../node_modules/bootstrap/dist/css/bootstrap.min.css",
-        "styles.scss",
-        "theme.scss"
+        "styles.scss"
       ],
       "scripts": [
       ],
