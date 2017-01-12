@@ -11,10 +11,10 @@ __scaffolding live-preview can be found at below url__ :
 [https://scaffolding-all-fdb93.firebaseapp.com/](https://scaffolding-all-fdb93.firebaseapp.com/)
 
 __implemented feature__ :
-. Generate & dowload scaffolding.json file using the visual editor
+- generate & dowload scaffolding.json file using the visual editor
 
 __roadmap__ :
-post release of version 1 with angular scaffolding. support for Polymer, React & ember-cli should be implemented.
+- post release of version 1 with angular scaffolding. support for Polymer, React & ember-cli should be implemented.
 
 __status__  : 
-*Work in progress*
+*work-in-progress*
