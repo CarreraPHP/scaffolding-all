@@ -1,7 +1,4 @@
 <div class="card">
-  <!--<div class="card-header text-right">
-    <button class="btn btn-success">Download Scaffolding.json</button>
-  </div>-->
   <a id="jsonDownload" download="scaffolding.json" style="display: none;"></a>
   <ngb-tabset>
     <ngb-tab>
@@ -14,7 +11,6 @@
             <span class="object-begin-brace">{{ '{' }}</span>
           </li>
           <li *ngFor="let item of codeKeys; let itemIndex = index; let isLast = last;">
-            
             <ul>
               <li *ngFor="let subitem of item; let subitemIndex = index; let isSubLast = last;">
                 <!--&& !isAttributeValue(item, subitem, subitemIndex)-->
@@ -113,7 +109,4 @@
       </template>
     </ngb-tab>
   </ngb-tabset>
-  <!--<div class="card-footer text-right">
-    <button class="btn btn-success">Download Scaffolding.json</button>
-  </div>-->
 </div>

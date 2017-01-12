@@ -4,9 +4,8 @@ import {
     Injector, DoCheck, ViewEncapsulation,
     AfterViewInit
 } from '@angular/core';
-import { MdDialog, MdDialogRef, MdSnackBar } from '@angular/material';
 
-import { DialogContentComponent } from '../shared/dialog-content/dialog-content.component';
+import code from '../shared/scaffolding-base';
 
 // import {  } from '@angular/common';
 import 'codemirror/mode/javascript/javascript';
@@ -28,65 +27,7 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
         console.log("%c step 4: downloadAnchor", "color:red;font-size:medium;", arguments);
     }
 
-    public code: string = `{
-        /*
-            Application object is the root object that defines to the UI Application.
-            All the components, its uni-directional bindings and hierachial structure forms the whole application. 
-        */
-        "application": {
-            name: "website",
-            bootstrap: true,
-            /*
-                Component object is the just another component definition which holds rest of the components
-                a component holds bindings which dictates the input and output of it.
-                a component holds properties & methods which can be mere placeholder or can be for the binding above.
-                a component holds child components. 
-            */
-            rootComponent: {
-                name: "viewport",
-                bindings: {
-                    input: [
-                    ],
-                    output: [
-                    ]
-                },
-                properties: [
-                    {
-                        name: "enableSideBar",
-                        type: "boolean",
-                        defaultValue: true
-                    }, {
-                        name: "miniFooter",
-                        type: "boolean",
-                        defaultValue: true
-                    }, {
-                        name: "minHeader",
-                        type: "boolean",
-                        defaultValue: false
-                    }
-                ],
-                methods: [
-                    {
-                        name: "headerCallback",
-                        params: [],
-                        return: {
-                            type: "void"
-                        },
-                        getter: false,
-                        setter: false
-                    }
-                ],
-                components: [
-                ]
-            },
-            bindings: {
-                input: [
-                ],
-                output: [
-                ]
-            }
-        }
-    }`;
+    public code: string = code;
     public record: Object = {};
     public schema: Object = {};
 
@@ -97,7 +38,7 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     private codeJSONKeyList: Array<any> = [];
     private codeJSONUpdateTimeout: number = 0;
 
-    constructor(private _dialog: MdDialog, private renderer:Renderer) {
+    constructor(private renderer:Renderer) {
         this.cmOptions = {
             lineNumbers: true,
             // mode: {
@@ -373,24 +314,6 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
         let value = (event.target as HTMLInputElement).value;
         this.updateCodeJSON(keyPath, value);
         // }, 500);
-    }
-
-
-    openDialog(keyPath: string, key: string, value: string) {
-        this.log("triggered", []);
-
-        // var dc:DialogContentComponent = new DialogContentComponent();
-        // dc.currentValue = value;
-
-        // DialogContentComponent.currentValue = value;
-        let dialogRef = this._dialog.open(DialogContentComponent);
-        dialogRef.componentInstance.currentValue = value;
-        dialogRef.componentInstance.attributeKey = key;
-
-        dialogRef.afterClosed().subscribe(result => {
-            this.updateCodeJSON(keyPath, result);
-            this.log("result from dialog", [this.codeJSON]);
-        });
     }
 
     /**
