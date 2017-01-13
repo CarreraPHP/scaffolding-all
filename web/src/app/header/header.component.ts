@@ -12,9 +12,9 @@ export class HeaderComponent implements OnInit {
 
   constructor() { }
 
-  
-  generateJSONFile() : void {
-    console.log("%c step 1: button clicked", "color:red;font-size:medium;");
+
+  generateJSONFile(): void {
+    console.log('%c step 1: button clicked', 'color:red;font-size:medium;');
     this.generateFile.emit();
   }
 

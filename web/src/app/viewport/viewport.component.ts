@@ -9,11 +9,11 @@ import { EditorComponent } from '../editor/editor.component';
 })
 export class ViewportComponent implements OnInit {
 
-  constructor() { 
+  constructor() {
   }
 
-  downloadFile(editEl:EditorComponent) {
-    console.log("%c step 2: Viewport method triggered", "color:red;font-size:medium;", arguments);
+  downloadFile(editEl: EditorComponent) {
+    console.log('%c step 2: Viewport method triggered', 'color:red;font-size:medium;', arguments);
     editEl.downloadLatestJSON();
   }
 

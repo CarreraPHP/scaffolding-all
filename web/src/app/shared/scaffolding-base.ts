@@ -1,4 +1,4 @@
-const code:string = `{
+const code: string = String`{
     /*
         Application object is the root object that defines to the UI Application.
         All the components, its uni-directional bindings and hierachial structure forms the whole application. 

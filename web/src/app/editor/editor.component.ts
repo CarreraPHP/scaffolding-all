@@ -10,7 +10,7 @@ import code from '../shared/scaffolding-base';
 // import {  } from '@angular/common';
 import 'codemirror/mode/javascript/javascript';
 
-/// <reference path="json5.d.ts" />
+/// <reference path='json5.d.ts' />
 import * as json5 from 'json5';
 
 @Component({
@@ -23,8 +23,8 @@ import * as json5 from 'json5';
 export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
 
     @ViewChild('a#jsonDownload')
-    set downloadAnchor(v:HTMLAnchorElement) {
-        console.log("%c step 4: downloadAnchor", "color:red;font-size:medium;", arguments);
+    set downloadAnchor(v: HTMLAnchorElement) {
+        console.log('%c step 4: downloadAnchor', 'color:red;font-size:medium;', arguments);
     }
 
     public code: string = code;
@@ -38,7 +38,7 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     private codeJSONKeyList: Array<any> = [];
     private codeJSONUpdateTimeout: number = 0;
 
-    constructor(private renderer:Renderer) {
+    constructor(private renderer: Renderer) {
         this.cmOptions = {
             lineNumbers: true,
             // mode: {
@@ -47,7 +47,7 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
             // },
             matchBrackets: true,
             autoCloseBrackets: true,
-            mode: "application/ld+json",
+            mode: 'application/ld+json',
             lineWrapping: true
         };
         this.jsonViewerOptions = {};
@@ -65,14 +65,14 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     set codeObject(obj: Object) {
         this.codeJSON = obj;
         this.code = json5.stringify(obj);
-        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, "");
+        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, '');
     }
 
     get codeKeys(): Array<any> {
         if (this.codeJSONKeyList.length > 0) {
             return this.codeJSONKeyList;
         }
-        return this.codeJSONKeyList = this.getKeyListfromObject(this.codeObject, 1, "");
+        return this.codeJSONKeyList = this.getKeyListfromObject(this.codeObject, 1, '');
     }
 
     set codeKeys(arr: Array<any>) {
@@ -80,22 +80,22 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     }
 
     getKeyListfromObject(obj: Object, span: number, path: string): Array<any> {
-        let retArr = [],
-            spanArr = [];
+        let retArr = [];
+        const spanArr = [];
 
-        for (var k = 0; k < span; k++) {
-            spanArr.push("");
+        for (let k = 0; k < span; k++) {
+            spanArr.push('');
         }
 
-        for (let i in obj) {
+        for (const i in obj) {
             if (obj[i] instanceof Array) {
-                retArr.push(spanArr.concat([i, "[", this.getObjectPath(path, i)]));
+                retArr.push(spanArr.concat([i, '[', this.getObjectPath(path, i)]));
                 retArr = retArr.concat(this.getObjectFromList(obj[i], span + 1, this.getObjectPath(path, i)));
-                retArr.push(spanArr.concat(["]"]));
+                retArr.push(spanArr.concat([']']));
             } else if (obj[i] instanceof Object) {
-                retArr.push(spanArr.concat([i, "{", this.getObjectPath(path, i)]));
+                retArr.push(spanArr.concat([i, '{', this.getObjectPath(path, i)]));
                 retArr = retArr.concat(this.getKeyListfromObject(obj[i], span + 1, this.getObjectPath(path, i)));
-                retArr.push(spanArr.concat(["}"]));
+                retArr.push(spanArr.concat(['}']));
             } else {
                 retArr.push(spanArr.concat([i, obj[i], this.getObjectPath(path, i)]));
             }
@@ -104,42 +104,35 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     }
 
     getObjectPath(currPath: string, i: any): string {
-        let retStr = "",
-            keyStr = "";
+        let keyStr = '';
 
-        if (typeof i == "number") {
-            keyStr = [currPath, "[", i, "]"].join("");
+        if (typeof i === 'number') {
+            keyStr = [currPath, '[', i, ']'].join('');
         } else {
-            keyStr = [currPath, (currPath.length < 1 ? "" : "."), i].join("");
+            keyStr = [currPath, (currPath.length < 1 ? '' : '.'), i].join('');
         }
-
-        // if(currPath.length < 1) {
-        //     retStr = keyStr;
-        // } else {
-        //     retStr = [currPath, keyStr].join("");
-        // }
         return keyStr;
     }
 
     getObjectFromList(arr: Array<any>, span: number, path: string): Array<any> {
-        let retArr = [],
-            spanArr = [];
+        let retArr = [];
+        const spanArr = [];
 
-        for (var k = 0; k < span; k++) {
-            spanArr.push("");
+        for (let k = 0; k < span; k++) {
+            spanArr.push('');
         }
 
         arr.forEach((value, i) => {
             if (value instanceof Array) {
-                retArr.push(spanArr.concat([i, "[", this.getObjectPath(path, i)]));
+                retArr.push(spanArr.concat([i, '[', this.getObjectPath(path, i)]));
                 retArr = retArr.concat(this.getObjectFromList(value, span + 1, this.getObjectPath(path, i)));
-                retArr.push(spanArr.concat(["]"]));
+                retArr.push(spanArr.concat([']']));
                 // retArr.push([i, [this.getObjectFromList(value)]]);
             } else if (value instanceof Object) {
-                retArr.push(spanArr.concat([i, "{", this.getObjectPath(path, i)]));
-                // console.log("key list from object", this.getKeyListfromObject(value));
+                retArr.push(spanArr.concat([i, '{', this.getObjectPath(path, i)]));
+                // console.log('key list from object', this.getKeyListfromObject(value));
                 retArr = retArr.concat(this.getKeyListfromObject(value, span + 1, this.getObjectPath(path, i)));
-                retArr.push(spanArr.concat(["}"]));
+                retArr.push(spanArr.concat(['}']));
                 // retArr.push([i, this.getKeyListfromObject(value)]);
             } else {
                 retArr.push(spanArr.concat([i, value, this.getObjectPath(path, i)]));
@@ -155,8 +148,8 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
 
     isPrimitive(item: Array<any>): Boolean {
         if (item.length > 2) {
-            let value = item[item.length - 2];
-            if (value == "{" || value == "[") {
+            const value = item[item.length - 2];
+            if (value === '{' || value === '[') {
                 return false;
             }
         }
@@ -165,11 +158,10 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
 
     isNotPrimitiveAndObjectEnd(item: Array<any>, itemIndex: number, isLast: boolean): Boolean {
         if (!isLast) {
-            let i = itemIndex,
+            const i = itemIndex,
                 nextItem: Array<any> = this.codeKeys[i + 1];
 
-            console.log("%c item & nextItem length", "color:red;font-size:20px;", item.length, nextItem.length, item, nextItem);
-
+            console.log('%c item & nextItem length', 'color:red;font-size:20px;', item.length, nextItem.length, item, nextItem);
             if (item.length > nextItem.length) {
                 return true;
             }
@@ -179,62 +171,62 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     }
 
     isObjectKey(item: Array<any>, subitem: any, subitemIndex: number) {
-        // this.log("is object key", [item, subitem, subitemIndex, item.length-3, item[subitemIndex+1]]);
-        let c1: boolean = subitemIndex == item.length - 3;
-        if (c1 && item[subitemIndex + 1] == "{") {
+        // this.log('is object key', [item, subitem, subitemIndex, item.length-3, item[subitemIndex+1]]);
+        const c1: boolean = subitemIndex === item.length - 3;
+        if (c1 && item[subitemIndex + 1] === '{') {
             return true;
         }
         return false;
     }
 
     isObjectBeginBrace(item: Array<any>, subitem: any, subitemIndex: number) {
-        // this.log("is object key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
-        let c1: boolean = subitemIndex == item.length - 2;
-        if (c1 && item[subitemIndex] == "{") {
+        // this.log('is object key', [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
+        const c1: boolean = subitemIndex === item.length - 2;
+        if (c1 && item[subitemIndex] === '{') {
             return true;
         }
         return false;
     }
 
     isObjectEndBrace(item: Array<any>, subitem: any, subitemIndex: number) {
-        // this.log("is object key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
-        let c1: boolean = subitemIndex == item.length - 1;
-        if (c1 && subitem == "}") {
+        // this.log('is object key', [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
+        const c1: boolean = subitemIndex === item.length - 1;
+        if (c1 && subitem === '}') {
             return true;
         }
         return false;
     }
 
     isArrayKey(item: Array<any>, subitem: any, subitemIndex: number) {
-        // this.log("is array key", [item, subitem, subitemIndex, item.length-3, item[subitemIndex+1]]);
-        let c1: boolean = subitemIndex == item.length - 3;
-        if (c1 && item[subitemIndex + 1] == "[") {
+        // this.log('is array key', [item, subitem, subitemIndex, item.length-3, item[subitemIndex+1]]);
+        const c1: boolean = subitemIndex === item.length - 3;
+        if (c1 && item[subitemIndex + 1] === '[') {
             return true;
         }
         return false;
     }
 
     isArrayBeginBrace(item: Array<any>, subitem: any, subitemIndex: number) {
-        // this.log("is array key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
-        let c1: boolean = subitemIndex == item.length - 2;
-        if (c1 && item[subitemIndex] == "[") {
+        // this.log('is array key', [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
+        const c1: boolean = subitemIndex === item.length - 2;
+        if (c1 && item[subitemIndex] === '[') {
             return true;
         }
         return false;
     }
 
     isArrayEndBrace(item: Array<any>, subitem: any, subitemIndex: number) {
-        // this.log("is object key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
-        let c1: boolean = subitemIndex == item.length - 1;
-        if (c1 && subitem == "]") {
+        // this.log('is object key', [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
+        const c1: boolean = subitemIndex === item.length - 1;
+        if (c1 && subitem === ']') {
             return true;
         }
         return false;
     }
 
     isAttributeKey(item: Array<any>, subitem: any, subitemIndex: number) {
-        // this.log("is attribute key", [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
-        let c1: boolean = subitemIndex == item.length - 3,
+        // this.log('is attribute key', [item, subitem, subitemIndex, item.length-2, item[subitemIndex]]);
+        const c1: boolean = subitemIndex === item.length - 3,
             isKey = (subitem.length > 0);
         if (c1 && isKey && !this.isArrayKey(item, subitem, subitemIndex) && !this.isObjectKey(item, subitem, subitemIndex)) {
             return true;
@@ -244,7 +236,7 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
 
     isAttributeValue(item: Array<any>, subitem: any, subitemIndex: number) {
         if (subitemIndex > 1) {
-            // this.log("is attribute value", [item, subitem, subitemIndex, item[subitemIndex-1], subitemIndex-1]);
+            // this.log('is attribute value', [item, subitem, subitemIndex, item[subitemIndex-1], subitemIndex-1]);
             return this.isAttributeKey(item, item[subitemIndex - 1], subitemIndex - 1);
         }
         return false;
@@ -252,68 +244,60 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
 
     isAttributeMetaValue(item: Array<any>, subitem: any, subitemIndex: number) {
         if (subitemIndex > 2) {
-            // this.log("is attribute value", [item, subitem, subitemIndex, item[subitemIndex-1], subitemIndex-1]);
+            // this.log('is attribute value', [item, subitem, subitemIndex, item[subitemIndex-1], subitemIndex-1]);
             return this.isAttributeKey(item, item[subitemIndex - 2], subitemIndex - 2);
         }
         return false;
     }
 
     getBeginBraces(item: Array<any>): Array<string> {
-        let retArr = [],
+        const retArr = [],
             type = item[item.length - 2];
-        for (var i = 0; i < item.length - 3; i++) {
-            retArr.push("");
+        for (let i = 0; i < item.length - 3; i++) {
+            retArr.push('');
         }
-        if (type == "{") {
-            retArr.push("{");
-        } else if (type == "[") {
-            retArr.push("[");
+        if (type === '{') {
+            retArr.push('{');
+        } else if (type === '[') {
+            retArr.push('[');
         }
         return retArr;
     }
 
     getEndBraces(item: Array<any>): Array<string> {
-        let retArr = [],
+        const retArr = [],
             type = item[item.length - 2];
-        for (var i = 0; i < item.length - 3; i++) {
-            retArr.push("");
+        for (let i = 0; i < item.length - 3; i++) {
+            retArr.push('');
         }
-        if (type == "{") {
-            retArr.push("}");
-        } else if (type == "[") {
-            retArr.push("]");
+        if (type === '{') {
+            retArr.push('}');
+        } else if (type === '[') {
+            retArr.push(']');
         }
         return retArr;
     }
 
     getOptions(item: Array<any>): Array<any> {
-        var retArr = [],
+        const retArr = [],
             type = item[item.length - 1],
             name = item[item.length - 2];
 
-        if (name == "application" && type == "{") {
-
+        if (name === 'application' && type === '{') {
         }
-
         return retArr;
     }
 
     updateCodeJSON(keyPath: string, result: any) {
-        Function("obj", "value", `obj.` + keyPath + ` = value`)(this.codeJSON, result);
+        Function('obj', 'value', `obj.` + keyPath + ` = value`)(this.codeJSON, result);
         this.codeObject = this.codeJSON;
-        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, "");
-        this.log("result from dialog", [result, keyPath, this.codeJSON]);
+        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, '');
+        this.log('result from dialog', [result, keyPath, this.codeJSON]);
     }
 
     handleAttributeValue(event: Event, keyPath: string) {
-        // if(this.codeJSONUpdateTimeout > 0) {
-        //     window.clearTimeout(this.codeJSONUpdateTimeout);
-        //     this.codeJSONUpdateTimeout = 0;
-        // }
-        // this.codeJSONUpdateTimeout = window.setTimeout(() => {
-        let value = (event.target as HTMLInputElement).value;
+        const value = (event.target as HTMLInputElement).value;
         this.updateCodeJSON(keyPath, value);
-        // }, 500);
     }
 
     /**
@@ -325,34 +309,34 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     }
 
     isPropertiesArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
-        return (subitem === "[" && item[subitemIndex - 1] === "properties") ? true : false;
+        return (subitem === '[' && item[subitemIndex - 1] === 'properties') ? true : false;
     }
 
     isInputArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
-        return (subitem === "[" && item[subitemIndex - 1] === "input") ? true : false;
+        return (subitem === '[' && item[subitemIndex - 1] === 'input') ? true : false;
     }
 
     isOutputArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
-        return (subitem === "[" && item[subitemIndex - 1] === "output") ? true : false;
+        return (subitem === '[' && item[subitemIndex - 1] === 'output') ? true : false;
     }
 
     isMethodArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
-        return (subitem === "[" && item[subitemIndex - 1] === "methods") ? true : false;
+        return (subitem === '[' && item[subitemIndex - 1] === 'methods') ? true : false;
     }
 
     isMethodParamArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
-        return (subitem === "[" && item[subitemIndex - 1] === "params") ? true : false;
+        return (subitem === '[' && item[subitemIndex - 1] === 'params') ? true : false;
     }
 
     isComponentArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
-        return (subitem === "[" && item[subitemIndex - 1] === "components") ? true : false;
+        return (subitem === '[' && item[subitemIndex - 1] === 'components') ? true : false;
     }
 
     addProperty(item: Array<any>, subitem: any, subitemIndex: number): void {
         const keyPath = item[subitemIndex + 1];
         const result = {
-            name: "newProperty",
-            type: "boolean",
+            name: 'newProperty',
+            type: 'boolean',
             defaultValue: true
         };
         this.pushToCodeJSONArray(keyPath, result);
@@ -361,9 +345,9 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     addInput(item: Array<any>, subitem: any, subitemIndex: number): void {
         const keyPath = item[subitemIndex + 1];
         const result = {
-            name: "newInput",
-            // bindingType: "property",
-            parentBinding: "parentProperty"
+            name: 'newInput',
+            // bindingType: 'property',
+            parentBinding: 'parentProperty'
         };
         this.pushToCodeJSONArray(keyPath, result);
     }
@@ -371,9 +355,9 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     addOutput(item: Array<any>, subitem: any, subitemIndex: number): void {
         const keyPath = item[subitemIndex + 1];
         const result = {
-            name: "newOutput",
-            // bindingType: "property",
-            parentBinding: "parentMethod"
+            name: 'newOutput',
+            // bindingType: 'property',
+            parentBinding: 'parentMethod'
         };
         this.pushToCodeJSONArray(keyPath, result);
     }
@@ -381,10 +365,10 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     addMethod(item: Array<any>, subitem: any, subitemIndex: number): void {
         const keyPath = item[subitemIndex + 1];
         const result = {
-            name: "newMethod",
+            name: 'newMethod',
             params: [],
             return: {
-                type: "void"
+                type: 'void'
             },
             getter: false,
             setter: false
@@ -395,19 +379,19 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     addMethodParam(item: Array<any>, subitem: any, subitemIndex: number): void {
         const keyPath = item[subitemIndex + 1];
         const result = {
-            name: "newParam",
-            type: "string"
+            name: 'newParam',
+            type: 'string'
         };
         this.pushToCodeJSONArray(keyPath, result);
     }
 
     addComponent(item: Array<any>, subitem: any, subitemIndex: number): void {
         // Below code is not required as this condition check is done in the ngIf expression
-        // if (subitem === "[" && item[subitemIndex-1] === "components") {}
-        // this.log("Arguments for Add Component", [item, subitem, subitemIndex]);
+        // if (subitem === '[' && item[subitemIndex-1] === 'components') {}
+        // this.log('Arguments for Add Component', [item, subitem, subitemIndex]);
         const keyPath = item[subitemIndex + 1];
         const result = {
-            name: "newComponent",
+            name: 'newComponent',
             bindings: {
                 input: [],
                 output: []
@@ -422,33 +406,33 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     isWithinArray(item: Array<any>, subitem: any, subitemIndex: number): boolean {
         // will test is the value is an number or not.
         // This will confirm whether the value is within an Array or not.
-        const r:RegExp = /^\d+$/; 
-        return (subitem === "{" && r.test(item[subitemIndex - 1])) ? true : false;
+        const r: RegExp = /^\d+$/ig;
+        return (subitem === '{' && r.test(item[subitemIndex - 1])) ? true : false;
     }
 
     prungeInstance(item: Array<any>, subitem: any, subitemIndex: number): void {
         const keyPath = item[subitemIndex + 1];
-        const result = parseInt(item[subitemIndex - 1]);
+        const result = parseInt(item[subitemIndex - 1], 10);
         this.spliceFromCodeJSONArray(keyPath, result);
     }
 
     pushToCodeJSONArray(keyPath: string, result: any) {
-        Function("obj", "value", `obj.` + keyPath + `.push(value)`)(this.codeJSON, result);
+        Function('obj', 'value', `obj.` + keyPath + `.push(value)`)(this.codeJSON, result);
         this.codeObject = this.codeJSON;
-        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, "");
+        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, '');
     }
 
     spliceFromCodeJSONArray(keyPath: string, result: number) {
-        Function("obj", "value", `obj.` + keyPath.replace("[" + result +"]", "") + `.splice(value, 1)`)(this.codeJSON, result);
+        Function('obj', 'value', `obj.` + keyPath.replace('[' + result + ']', '') + `.splice(value, 1)`)(this.codeJSON, result);
         this.codeObject = this.codeJSON;
-        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, "");
+        this.codeKeys = this.getKeyListfromObject(this.codeJSON, 1, '');
     }
 
-    downloadLatestJSON() : void {
-        console.log("%c step 3: Before Anchor click event triggered", "color:red;font-size:medium;");
-        const anchor:HTMLAnchorElement = this.renderer.selectRootElement("a#jsonDownload");
-        const blob:Blob = new Blob([JSON.stringify(this.codeJSON)], { type: "application/json"});
-        const url:string = URL.createObjectURL(blob);
+    downloadLatestJSON(): void {
+        console.log('%c step 3: Before Anchor click event triggered', 'color:red;font-size:medium;');
+        const anchor: HTMLAnchorElement = this.renderer.selectRootElement('a#jsonDownload');
+        const blob: Blob = new Blob([JSON.stringify(this.codeJSON)], { type: 'application/json' });
+        const url: string = URL.createObjectURL(blob);
         anchor.href = url;
         anchor.click();
     }
@@ -458,12 +442,12 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     }
 
     log(text: string, values: Array<any>) {
-        console.log.apply(this, ["%c " + text, "color:red;font-size:20px;"].concat(values));
+        console.log.apply(this, ['%c ' + text, 'color:red;font-size:20px;'].concat(values));
     }
 
     ngOnInit() {
-        console.log("code object", this.codeObject);
-        console.log("code object string", json5.stringify(this.codeObject));
+        console.log('code object', this.codeObject);
+        console.log('code object string', json5.stringify(this.codeObject));
     }
 
     ngDoCheck() {
@@ -471,7 +455,7 @@ export class EditorComponent implements OnInit, DoCheck, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        console.log("%c step 5: AfterViewInit", "color:red;font-size:medium;", arguments);
+        console.log('%c step 5: AfterViewInit', 'color:red;font-size:medium;', arguments);
     }
 
 }
